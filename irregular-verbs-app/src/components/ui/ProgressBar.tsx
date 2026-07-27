@@ -1,0 +1,26 @@
+interface ProgressBarProps {
+  value: number; // 0-100
+  label?: string;
+  className?: string;
+}
+
+export function ProgressBar({ value, label, className = "" }: ProgressBarProps) {
+  const clamped = Math.min(100, Math.max(0, value));
+  return (
+    <div
+      className={className}
+      role="progressbar"
+      aria-valuenow={Math.round(clamped)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={label}
+    >
+      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+        <div
+          className="h-full rounded-full bg-brand-500 transition-[width] duration-500"
+          style={{ width: `${clamped}%` }}
+        />
+      </div>
+    </div>
+  );
+}

@@ -1,12 +1,14 @@
 node_modules
 dist
 dist-ssr
-.wrangler
-.dev.vars
+*.local
 .env
 .env.local
 .env.*.local
+
+# Editor/OS
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
 *.log
 npm-debug.log*
-.DS_Store
-*.tsbuildinfo
