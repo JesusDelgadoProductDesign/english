@@ -10,9 +10,14 @@ interface AuthContextValue {
   isLoading: boolean;
   isSyncing: boolean;
   isConfigured: boolean;
+  /** True while the app is showing the "set a new password" step after the user followed a reset-password email link. */
+  isPasswordRecovery: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>;
   signUpWithPassword: (email: string, password: string) => Promise<{ error: string | null }>;
+  sendPasswordResetEmail: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: string | null }>;
+  cancelPasswordRecovery: () => void;
   signOut: () => Promise<void>;
 }
 
@@ -22,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   const queryClient = useQueryClient();
   const hadUserRef = useRef(false);
 
@@ -56,7 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // A recovery-flow session, not a real sign-in — surface the "set a new
+        // password" step instead of treating this as the user logging in.
+        setIsPasswordRecovery(true);
+        setUser(session?.user ?? null);
+        setCurrentUserId(session?.user?.id ?? null);
+        return;
+      }
       handleSession(session?.user ?? null);
     });
 
@@ -83,6 +97,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   }
 
+  async function sendPasswordResetEmail(email: string) {
+    if (!supabase) return { error: "Supabase is not configured." };
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    return { error: error?.message ?? null };
+  }
+
+  async function updatePassword(newPassword: string) {
+    if (!supabase) return { error: "Supabase is not configured." };
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return { error: error.message };
+
+    setIsPasswordRecovery(false);
+    // The recovery session is now a normal one — run it through the same
+    // sign-in handling (merge check is idempotent; a returning user's cloud
+    // data already exists, so this is a no-op for them).
+    hadUserRef.current = false;
+    setCurrentUserId(user?.id ?? null);
+    if (user) {
+      setIsSyncing(true);
+      try {
+        await mergeLocalProgressIfNeeded(user.id);
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+    hadUserRef.current = Boolean(user);
+    await queryClient.invalidateQueries();
+    return { error: null };
+  }
+
+  function cancelPasswordRecovery() {
+    setIsPasswordRecovery(false);
+  }
+
   async function signOut() {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -95,9 +145,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isSyncing,
         isConfigured: isSupabaseConfigured,
+        isPasswordRecovery,
         signInWithGoogle,
         signInWithPassword,
         signUpWithPassword,
+        sendPasswordResetEmail,
+        updatePassword,
+        cancelPasswordRecovery,
         signOut,
       }}
     >

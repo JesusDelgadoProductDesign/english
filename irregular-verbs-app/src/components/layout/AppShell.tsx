@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useGamification } from "@/hooks/useGamification";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthPanel } from "@/features/auth/AuthPanel";
+import { ResetPasswordPanel } from "@/features/auth/ResetPasswordPanel";
 
 const NAV_ITEMS = [
   { to: "/", label: "Practice", icon: "📝", end: true },
@@ -61,12 +62,15 @@ function AccountControl() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { gamification } = useGamification();
+  const { isPasswordRecovery } = useAuth();
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-20 sm:pb-0">
       <a href="#main-content" className="sr-only-focusable fixed left-2 top-2 z-50 rounded bg-white px-3 py-2 shadow">
         Skip to content
       </a>
+
+      {isPasswordRecovery && <ResetPasswordPanel />}
 
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="flex items-center justify-between gap-2 px-4 py-3">
