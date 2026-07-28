@@ -15,7 +15,7 @@ export interface PracticeState {
 }
 
 export function usePracticeSession() {
-  const { settings } = useSettings();
+  const { settings, error: settingsError } = useSettings();
   const queryClient = useQueryClient();
   const [state, setState] = useState<PracticeState>({ item: null, verb: null, outcome: null, startedAt: Date.now() });
   const [isBusy, setIsBusy] = useState(false);
@@ -65,5 +65,5 @@ export function usePracticeSession() {
     [state, queryClient],
   );
 
-  return { ...state, settings, isBusy, error, loadNext, answer };
+  return { ...state, settings, isBusy, error: settingsError ?? error, loadNext, answer };
 }

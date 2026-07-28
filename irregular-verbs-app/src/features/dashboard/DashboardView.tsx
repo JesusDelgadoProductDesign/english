@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { StatTile } from "@/components/ui/StatTile";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Sparkline } from "@/components/charts/Sparkline";
@@ -21,8 +22,20 @@ function formatDuration(ms: number): string {
 }
 
 export function DashboardView() {
-  const { stats, isLoading } = useDashboardStats();
-  const { gamification } = useGamification();
+  const { stats, isLoading, error: statsError } = useDashboardStats();
+  const { gamification, error: gamificationError } = useGamification();
+  const error = statsError ?? gamificationError;
+
+  if (error && (!stats || !gamification)) {
+    return (
+      <Card className="space-y-3">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          {error}
+        </p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </Card>
+    );
+  }
 
   if (isLoading || !stats || !gamification) {
     return (

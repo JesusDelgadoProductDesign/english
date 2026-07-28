@@ -51,6 +51,17 @@ export function PracticeView() {
   );
   const autoRevealEnabled = settings?.enabledHints.includes("reveal-on-attempt") ?? false;
 
+  if (!settings && error) {
+    return (
+      <Card className="space-y-3">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          {error}
+        </p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </Card>
+    );
+  }
+
   if (!settings || !item || !verb) {
     return (
       <Card>

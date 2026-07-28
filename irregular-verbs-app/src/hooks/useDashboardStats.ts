@@ -11,5 +11,9 @@ export function useDashboardStats() {
     queryKey: [...STATS_QUERY_KEY, user?.id ?? "guest"],
     queryFn: () => computeDashboardStats(),
   });
-  return { stats: query.data, isLoading: query.isLoading };
+  return {
+    stats: query.data,
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
+  };
 }

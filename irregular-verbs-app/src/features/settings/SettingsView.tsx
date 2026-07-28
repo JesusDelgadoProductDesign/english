@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { useSettings } from "@/hooks/useSettings";
 import { ALL_MODES } from "@/domain/practice";
 import type { DifficultyLevel, FeedbackMode, HintType, PracticeMode, SelectionStrategy } from "@/domain/practice";
@@ -32,9 +33,26 @@ const HINTS: { id: HintType; label: string }[] = [
 ];
 
 export function SettingsView() {
-  const { settings, updateSettings } = useSettings();
+  const { settings, error, updateSettings } = useSettings();
 
-  if (!settings) return null;
+  if (!settings && error) {
+    return (
+      <Card className="space-y-3">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          {error}
+        </p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </Card>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <Card>
+        <p className="text-sm text-slate-500">Loading your settings…</p>
+      </Card>
+    );
+  }
 
   function toggleHint(hint: HintType) {
     if (!settings) return;

@@ -11,7 +11,11 @@ export function useGamification() {
     queryKey: [...GAMIFICATION_QUERY_KEY, user?.id ?? "guest"],
     queryFn: () => getGamificationRepository().get(),
   });
-  return { gamification: query.data, isLoading: query.isLoading };
+  return {
+    gamification: query.data,
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
+  };
 }
 
 export function useInvalidateGamification() {

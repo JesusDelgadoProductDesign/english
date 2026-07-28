@@ -45,6 +45,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsSyncing(true);
         try {
           await mergeLocalProgressIfNeeded(nextUser.id);
+        } catch (err) {
+          // Don't let a merge failure (e.g. tables not yet provisioned) block
+          // the repository switch below — the signed-in queries will surface
+          // their own errors instead of leaving the app stuck mid sign-in.
+          console.error("Failed to merge local progress into account:", err);
         } finally {
           setIsSyncing(false);
         }
