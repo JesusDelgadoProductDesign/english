@@ -24,7 +24,7 @@ export function renderHint(hint: HintType, answer: string, progressiveLettersRev
     case "first-letter":
       return `${answer[0]}${"_".repeat(Math.max(0, answer.length - 1))}`;
     case "letter-count":
-      return `${answer.length} letters`;
+      return String(answer.length);
     case "missing-vowels":
       return maskWith(answer, (c) => !VOWELS.has(c));
     case "missing-consonants":
@@ -33,12 +33,3 @@ export function renderHint(hint: HintType, answer: string, progressiveLettersRev
       return maskWith(answer, () => false, progressiveLettersRevealed);
   }
 }
-
-/** Ordered hint levels: pressing Space advances through this list for the active hint type. */
-export const HINT_LABELS: Record<HintType, string> = {
-  "first-letter": "First letter",
-  "letter-count": "Number of letters",
-  "missing-vowels": "Missing vowels",
-  "missing-consonants": "Missing consonants",
-  "reveal-on-attempt": "Reveal a letter",
-};

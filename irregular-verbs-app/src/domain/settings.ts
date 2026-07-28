@@ -1,5 +1,7 @@
 import type { DifficultyLevel, FeedbackMode, HintType, PracticeMode, SelectionStrategy } from "./practice";
 
+export type UiLanguage = "en" | "es";
+
 export interface UserSettings {
   preferredMode: PracticeMode | "auto-mix";
   selectionStrategy: SelectionStrategy;
@@ -8,6 +10,7 @@ export interface UserSettings {
   enabledHints: HintType[];
   audioEnabled: boolean;
   dailyGoal: number;
+  language: UiLanguage;
 }
 
 export function createDefaultSettings(): UserSettings {
@@ -19,5 +22,6 @@ export function createDefaultSettings(): UserSettings {
     enabledHints: ["first-letter", "letter-count", "missing-vowels", "missing-consonants", "reveal-on-attempt"],
     audioEnabled: true,
     dailyGoal: 20,
+    language: "en",
   };
 }

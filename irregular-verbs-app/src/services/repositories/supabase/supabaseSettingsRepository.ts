@@ -1,4 +1,4 @@
-import type { UserSettings } from "@/domain/settings";
+import type { UserSettings, UiLanguage } from "@/domain/settings";
 import { createDefaultSettings } from "@/domain/settings";
 import type { DifficultyLevel, FeedbackMode, HintType, PracticeMode, SelectionStrategy } from "@/domain/practice";
 import type { ISettingsRepository } from "../interfaces";
@@ -12,6 +12,7 @@ interface SettingsRow {
   enabled_hints: string[];
   audio_enabled: boolean;
   daily_goal: number;
+  language?: string;
 }
 
 function fromRow(row: SettingsRow): UserSettings {
@@ -23,6 +24,8 @@ function fromRow(row: SettingsRow): UserSettings {
     enabledHints: row.enabled_hints as HintType[],
     audioEnabled: row.audio_enabled,
     dailyGoal: row.daily_goal,
+    // Falls back to English if the `language` column hasn't been added yet.
+    language: (row.language as UiLanguage | undefined) ?? "en",
   };
 }
 
@@ -36,6 +39,7 @@ function toRow(settings: UserSettings, userId: string) {
     enabled_hints: settings.enabledHints,
     audio_enabled: settings.audioEnabled,
     daily_goal: settings.dailyGoal,
+    language: settings.language,
   };
 }
 

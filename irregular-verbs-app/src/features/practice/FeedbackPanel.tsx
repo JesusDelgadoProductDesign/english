@@ -6,9 +6,9 @@ import type { SubmitAnswersOutput } from "@/services/practice/sessionEngine";
 import type { FieldAttemptResult } from "@/domain/practice";
 import type { Verb, VerbField } from "@/domain/verb";
 import { primaryFormFor } from "@/domain/verb";
-import { FIELD_LABELS } from "@/domain/fieldLabels";
 import { allExampleSentences } from "@/services/content/exampleSentences";
 import { speak, isSpeechSupported } from "@/services/tts/speechService";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface FeedbackPanelProps {
   verb: Verb;
@@ -28,6 +28,7 @@ interface FieldCardProps {
 
 /** One verb-form/meaning card, showing the result badge and (if wrong) the user's own answer inline. */
 function FieldCard({ field, value, result, extra, onSpeak }: FieldCardProps) {
+  const { t } = useTranslation();
   const isWrong = result ? !result.correct : false;
 
   return (
@@ -40,12 +41,12 @@ function FieldCard({ field, value, result, extra, onSpeak }: FieldCardProps) {
             isWrong ? "text-red-700 dark:text-red-300" : "text-slate-500 dark:text-slate-400"
           }`}
         >
-          {FIELD_LABELS[field]}
+          {t(`fields.${field}`)}
         </span>
         <div className="flex items-center gap-1">
           {result && (
             <span
-              aria-label={result.correct ? "Correct" : "Incorrect"}
+              aria-label={result.correct ? t("feedback.correctAria") : t("feedback.incorrectAria")}
               className={result.correct ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}
             >
               {result.correct ? "✓" : "✗"}
@@ -54,7 +55,7 @@ function FieldCard({ field, value, result, extra, onSpeak }: FieldCardProps) {
           {onSpeak && (
             <button
               type="button"
-              aria-label={`Play pronunciation for ${value}`}
+              aria-label={t("practice.playPronunciation", { value })}
               onClick={onSpeak}
               className="rounded-full p-1 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700"
             >
@@ -66,7 +67,7 @@ function FieldCard({ field, value, result, extra, onSpeak }: FieldCardProps) {
       <p className="mt-1 font-medium">{value}</p>
       {isWrong && result && (
         <p className="mt-1 text-sm text-red-700 dark:text-red-300">
-          You wrote: <s className="opacity-70">{result.userAnswer.trim() || "(left blank)"}</s>
+          {t("feedback.youWrote")} <s className="opacity-70">{result.userAnswer.trim() || t("feedback.leftBlank")}</s>
         </p>
       )}
       {extra}
@@ -75,6 +76,7 @@ function FieldCard({ field, value, result, extra, onSpeak }: FieldCardProps) {
 }
 
 export function FeedbackPanel({ verb, outcome, audioEnabled, isBusy, onNext }: FeedbackPanelProps) {
+  const { t } = useTranslation();
   const sentences = allExampleSentences(verb);
   const speechAvailable = audioEnabled && isSpeechSupported();
   const resultFor = (field: VerbField) => outcome.results.find((r) => r.field === field);
@@ -83,16 +85,17 @@ export function FeedbackPanel({ verb, outcome, audioEnabled, isBusy, onNext }: F
     <Card className="space-y-4" role="status" aria-live="polite">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">
-          {outcome.allCorrect ? "Correct! 🎉" : "Here's the full picture"}
+          {outcome.allCorrect ? t("feedback.correctTitle") : t("feedback.fullPictureTitle")}
         </h2>
-        <Badge tone={outcome.allCorrect ? "success" : "warning"}>
-          +{outcome.xp.xpEarned} XP
-        </Badge>
+        <Badge tone={outcome.allCorrect ? "success" : "warning"}>+{outcome.xp.xpEarned} XP</Badge>
       </div>
 
       {outcome.newlyMastered.length > 0 && (
         <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          Mastered: {outcome.newlyMastered.map((f) => FIELD_LABELS[f]).join(", ")} for "{verb.infinitive}" 🏆
+          {t("feedback.masteredFor", {
+            fields: outcome.newlyMastered.map((f) => t(`fields.${f}`)).join(", "),
+            verb: verb.infinitive,
+          })}
         </p>
       )}
 
@@ -111,12 +114,10 @@ export function FeedbackPanel({ verb, outcome, audioEnabled, isBusy, onNext }: F
 
       <FieldCard field="meaning" value={verb.meanings.join(" / ")} result={resultFor("meaning")} />
 
-      <p className="text-xs text-slate-400">
-        Collocations and phrasal verbs are coming in a future update.
-      </p>
+      <p className="text-xs text-slate-400">{t("feedback.collocationsComingSoon")}</p>
 
       <Button onClick={onNext} disabled={isBusy} autoFocus>
-        {isBusy ? "Loading…" : "Next verb (Enter)"}
+        {isBusy ? t("feedback.loading") : t("feedback.nextVerbEnter")}
       </Button>
     </Card>
   );

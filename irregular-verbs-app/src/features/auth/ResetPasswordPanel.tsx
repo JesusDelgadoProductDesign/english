@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/i18n/useTranslation";
 
 /**
  * Shown automatically whenever the user arrives via a Supabase password-reset
@@ -11,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
  */
 export function ResetPasswordPanel() {
   const { updatePassword, cancelPasswordRecovery } = useAuth();
+  const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export function ResetPasswordPanel() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords don't match.");
+      setError(t("auth.passwordsDontMatch"));
       return;
     }
 
@@ -39,15 +41,15 @@ export function ResetPasswordPanel() {
       className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/80 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Set a new password"
+      aria-label={t("auth.setNewPassword")}
     >
       <Card className="my-auto max-h-[90vh] w-full max-w-sm space-y-4 overflow-y-auto">
-        <h2 className="text-lg font-semibold">Set a new password</h2>
+        <h2 className="text-lg font-semibold">{t("auth.setNewPassword")}</h2>
 
         <form className="space-y-3" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="reset-password" className="mb-1 block text-sm font-medium">
-              New password
+              {t("auth.newPassword")}
             </label>
             <input
               id="reset-password"
@@ -63,7 +65,7 @@ export function ResetPasswordPanel() {
           </div>
           <div>
             <label htmlFor="reset-password-confirm" className="mb-1 block text-sm font-medium">
-              Confirm new password
+              {t("auth.confirmNewPassword")}
             </label>
             <input
               id="reset-password-confirm"
@@ -84,7 +86,7 @@ export function ResetPasswordPanel() {
           )}
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Please wait…" : "Update password"}
+            {isSubmitting ? t("auth.pleaseWait") : t("auth.updatePassword")}
           </Button>
         </form>
 
@@ -93,7 +95,7 @@ export function ResetPasswordPanel() {
           onClick={cancelPasswordRecovery}
           className="w-full text-center text-sm text-slate-500 hover:underline dark:text-slate-400"
         >
-          Cancel
+          {t("auth.cancel")}
         </button>
       </Card>
     </div>,

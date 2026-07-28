@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/i18n/useTranslation";
 
 interface AuthPanelProps {
   onClose: () => void;
@@ -10,14 +11,15 @@ interface AuthPanelProps {
 
 type Mode = "sign-in" | "sign-up" | "forgot-password";
 
-const TITLES: Record<Mode, string> = {
-  "sign-in": "Sign in",
-  "sign-up": "Create account",
-  "forgot-password": "Reset password",
+const TITLE_KEYS: Record<Mode, string> = {
+  "sign-in": "auth.signIn",
+  "sign-up": "auth.createAccount",
+  "forgot-password": "auth.resetPasswordTitle",
 };
 
 export function AuthPanel({ onClose }: AuthPanelProps) {
   const { signInWithPassword, signUpWithPassword, sendPasswordResetEmail } = useAuth();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +52,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
       if (mode === "forgot-password") {
         const result = await sendPasswordResetEmail(email);
         if (result.error) setError(result.error);
-        else setInfo("Check your email for a password reset link.");
+        else setInfo(t("auth.checkEmailReset"));
         return;
       }
 
@@ -59,7 +61,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
       if (result.error) {
         setError(result.error);
       } else if (mode === "sign-up") {
-        setInfo("Check your email to confirm your account, then sign in.");
+        setInfo(t("auth.checkEmailConfirm"));
       } else {
         onClose();
       }
@@ -73,7 +75,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
       className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/80 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Sign in"
+      aria-label={t("auth.signIn")}
       onClick={onClose}
     >
       <Card
@@ -81,8 +83,13 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{TITLES[mode]}</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-slate-400 hover:text-slate-600">
+          <h2 className="text-lg font-semibold">{t(TITLE_KEYS[mode])}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t("auth.close")}
+            className="text-slate-400 hover:text-slate-600"
+          >
             ✕
           </button>
         </div>
@@ -90,7 +97,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
         <form className="space-y-3" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="auth-email" className="mb-1 block text-sm font-medium">
-              Email
+              {t("auth.email")}
             </label>
             <input
               id="auth-email"
@@ -107,7 +114,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
           {mode !== "forgot-password" && (
             <div>
               <label htmlFor="auth-password" className="mb-1 block text-sm font-medium">
-                Password
+                {t("auth.password")}
               </label>
               <input
                 id="auth-password"
@@ -125,7 +132,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
                   onClick={() => switchMode("forgot-password")}
                   className="mt-1 text-xs text-brand-600 hover:underline dark:text-brand-400"
                 >
-                  Forgot password?
+                  {t("auth.forgotPassword")}
                 </button>
               )}
             </div>
@@ -140,12 +147,12 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting
-              ? "Please wait…"
+              ? t("auth.pleaseWait")
               : mode === "sign-in"
-                ? "Sign in"
+                ? t("auth.signIn")
                 : mode === "sign-up"
-                  ? "Create account"
-                  : "Send reset link"}
+                  ? t("auth.createAccount")
+                  : t("auth.sendResetLink")}
           </Button>
         </form>
 
@@ -155,7 +162,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
             onClick={() => switchMode("sign-in")}
             className="w-full text-center text-sm text-brand-600 hover:underline dark:text-brand-400"
           >
-            Back to sign in
+            {t("auth.backToSignIn")}
           </button>
         ) : (
           <button
@@ -163,7 +170,7 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
             onClick={() => switchMode(mode === "sign-in" ? "sign-up" : "sign-in")}
             className="w-full text-center text-sm text-brand-600 hover:underline dark:text-brand-400"
           >
-            {mode === "sign-in" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+            {mode === "sign-in" ? t("auth.needAccountSignUp") : t("auth.alreadyHaveAccountSignIn")}
           </button>
         )}
       </Card>

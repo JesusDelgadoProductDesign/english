@@ -9,6 +9,7 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useGamification } from "@/hooks/useGamification";
 import { levelProgress } from "@/domain/gamification";
 import { ACHIEVEMENTS } from "@/domain/achievements";
+import { useTranslation } from "@/i18n/useTranslation";
 
 function formatPercent(value: number): string {
   return `${Math.round(value * 100)}%`;
@@ -22,6 +23,7 @@ function formatDuration(ms: number): string {
 }
 
 export function DashboardView() {
+  const { t } = useTranslation();
   const { stats, isLoading, error: statsError } = useDashboardStats();
   const { gamification, error: gamificationError } = useGamification();
   const error = statsError ?? gamificationError;
@@ -32,7 +34,7 @@ export function DashboardView() {
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
-        <Button onClick={() => window.location.reload()}>Retry</Button>
+        <Button onClick={() => window.location.reload()}>{t("common.retry")}</Button>
       </Card>
     );
   }
@@ -40,7 +42,7 @@ export function DashboardView() {
   if (isLoading || !stats || !gamification) {
     return (
       <Card>
-        <p className="text-sm text-slate-500">Loading your progress…</p>
+        <p className="text-sm text-slate-500">{t("dashboard.loadingProgress")}</p>
       </Card>
     );
   }
@@ -53,10 +55,15 @@ export function DashboardView() {
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-sm text-slate-500">Level {gamification.level}</p>
+            <p className="text-sm text-slate-500">{t("dashboard.level", { level: gamification.level })}</p>
             <p className="text-2xl font-bold">{gamification.xp} XP</p>
           </div>
-          <Badge tone="brand">🔥 {gamification.currentStreakDays}-day streak</Badge>
+          <Badge tone="brand">
+            🔥{" "}
+            {t(gamification.currentStreakDays === 1 ? "dashboard.streakDaysSingular" : "dashboard.streakDaysPlural", {
+              count: gamification.currentStreakDays,
+            })}
+          </Badge>
         </div>
         <ProgressBar
           className="mt-3"
@@ -66,78 +73,85 @@ export function DashboardView() {
       </Card>
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Progress</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t("dashboard.progress")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatTile label="Total verbs" value={String(stats.progress.totalVerbs)} />
-          <StatTile label="Mastered" value={String(stats.progress.masteredVerbs)} />
-          <StatTile label="Remaining" value={String(stats.progress.remainingVerbs)} />
+          <StatTile label={t("dashboard.totalVerbs")} value={String(stats.progress.totalVerbs)} />
+          <StatTile label={t("dashboard.mastered")} value={String(stats.progress.masteredVerbs)} />
+          <StatTile label={t("dashboard.remaining")} value={String(stats.progress.remainingVerbs)} />
           <StatTile
-            label="Today"
+            label={t("dashboard.today")}
             value={`${stats.progress.todayAttempts}/${stats.progress.todayGoal}`}
-            hint="questions answered"
+            hint={t("dashboard.questionsAnswered")}
           />
         </div>
       </Card>
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Performance</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t("dashboard.performance")}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatTile label="Accuracy" value={formatPercent(stats.performance.accuracy)} />
-          <StatTile label="Attempts" value={String(stats.performance.totalAttempts)} />
-          <StatTile label="Avg. response" value={`${Math.round(stats.performance.averageResponseTimeMs / 1000)}s`} />
-          <StatTile label="Study time" value={formatDuration(stats.performance.totalStudyTimeMs)} />
+          <StatTile label={t("dashboard.accuracy")} value={formatPercent(stats.performance.accuracy)} />
+          <StatTile label={t("dashboard.attempts")} value={String(stats.performance.totalAttempts)} />
+          <StatTile
+            label={t("dashboard.avgResponse")}
+            value={`${Math.round(stats.performance.averageResponseTimeMs / 1000)}s`}
+          />
+          <StatTile label={t("dashboard.studyTime")} value={formatDuration(stats.performance.totalStudyTimeMs)} />
         </div>
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <h2 className="mb-3 text-lg font-semibold">XP progression (30 days)</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("dashboard.xpProgression")}</h2>
           <Sparkline
             data={stats.charts.xpProgression.map((d) => ({ date: d.date, value: d.xp }))}
-            ariaLabel="Total XP over the last 30 days"
+            ariaLabel={t("dashboard.totalXpChartLabel")}
           />
         </Card>
         <Card>
-          <h2 className="mb-3 text-lg font-semibold">Accuracy over time (30 days)</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("dashboard.accuracyOverTime")}</h2>
           <Sparkline
             data={stats.charts.accuracyOverTime.map((d) => ({ date: d.date, value: Math.round(d.accuracy * 100) }))}
             formatValue={(v) => `${v}%`}
-            ariaLabel="Accuracy percentage over the last 30 days"
+            ariaLabel={t("dashboard.accuracyChartLabel")}
           />
         </Card>
       </div>
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Study calendar</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t("dashboard.studyCalendar")}</h2>
         <ActivityHeatmap days={stats.charts.last30Days} />
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <h2 className="mb-3 text-lg font-semibold">Weakest verbs</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("dashboard.weakestVerbs")}</h2>
           {stats.learning.weakest.length === 0 ? (
-            <p className="text-sm text-slate-500">Practice a few verbs to see this list.</p>
+            <p className="text-sm text-slate-500">{t("dashboard.practiceToSeeList")}</p>
           ) : (
             <ul className="space-y-2">
               {stats.learning.weakest.map((s) => (
                 <li key={s.verb.id} className="flex items-center justify-between text-sm">
                   <span className="font-medium">{s.verb.infinitive}</span>
-                  <Badge tone="warning">{formatPercent(s.averageConfidence)} confidence</Badge>
+                  <Badge tone="warning">
+                    {formatPercent(s.averageConfidence)} {t("dashboard.confidence")}
+                  </Badge>
                 </li>
               ))}
             </ul>
           )}
         </Card>
         <Card>
-          <h2 className="mb-3 text-lg font-semibold">Strongest verbs</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("dashboard.strongestVerbs")}</h2>
           {stats.learning.strongest.length === 0 ? (
-            <p className="text-sm text-slate-500">Practice a few verbs to see this list.</p>
+            <p className="text-sm text-slate-500">{t("dashboard.practiceToSeeList")}</p>
           ) : (
             <ul className="space-y-2">
               {stats.learning.strongest.map((s) => (
                 <li key={s.verb.id} className="flex items-center justify-between text-sm">
                   <span className="font-medium">{s.verb.infinitive}</span>
-                  <Badge tone="success">{formatPercent(s.averageConfidence)} confidence</Badge>
+                  <Badge tone="success">
+                    {formatPercent(s.averageConfidence)} {t("dashboard.confidence")}
+                  </Badge>
                 </li>
               ))}
             </ul>
@@ -146,16 +160,16 @@ export function DashboardView() {
       </div>
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Review queue</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t("dashboard.reviewQueue")}</h2>
         <div className="grid grid-cols-3 gap-3">
-          <StatTile label="Due today" value={String(stats.review.dueToday)} />
-          <StatTile label="Upcoming (7d)" value={String(stats.review.upcoming7Days)} />
-          <StatTile label="Queue size" value={String(stats.review.reviewQueueSize)} />
+          <StatTile label={t("dashboard.dueToday")} value={String(stats.review.dueToday)} />
+          <StatTile label={t("dashboard.upcoming7d")} value={String(stats.review.upcoming7Days)} />
+          <StatTile label={t("dashboard.queueSize")} value={String(stats.review.reviewQueueSize)} />
         </div>
       </Card>
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Achievements</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t("dashboard.achievements")}</h2>
         <div className="grid gap-2 sm:grid-cols-2">
           {ACHIEVEMENTS.map((a) => (
             <div
@@ -168,8 +182,8 @@ export function DashboardView() {
             >
               <span aria-hidden="true">{unlocked.has(a.id) ? "🏆" : "🔒"}</span>
               <span>
-                <span className="block font-medium">{a.title}</span>
-                <span className="block text-xs text-slate-500">{a.description}</span>
+                <span className="block font-medium">{t(`achievements.${a.id}.title`)}</span>
+                <span className="block text-xs text-slate-500">{t(`achievements.${a.id}.description`)}</span>
               </span>
             </div>
           ))}

@@ -2,14 +2,15 @@ import { useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useGamification } from "@/hooks/useGamification";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/i18n/useTranslation";
 import { AuthPanel } from "@/features/auth/AuthPanel";
 import { ResetPasswordPanel } from "@/features/auth/ResetPasswordPanel";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Practice", icon: "📝", end: true },
-  { to: "/dashboard", label: "Dashboard", icon: "📊", end: false },
-  { to: "/settings", label: "Settings", icon: "⚙️", end: false },
-];
+  { to: "/", labelKey: "nav.practice", icon: "📝", end: true },
+  { to: "/dashboard", labelKey: "nav.dashboard", icon: "📊", end: false },
+  { to: "/settings", labelKey: "nav.settings", icon: "⚙️", end: false },
+] as const;
 
 function navLinkClass(isActive: boolean): string {
   return `flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:flex-row sm:gap-2 sm:text-sm ${
@@ -21,12 +22,13 @@ function navLinkClass(isActive: boolean): string {
 
 function AccountControl() {
   const { user, isSyncing, isConfigured, signOut } = useAuth();
+  const { t } = useTranslation();
   const [panelOpen, setPanelOpen] = useState(false);
 
   if (!isConfigured) return null;
 
   if (isSyncing) {
-    return <span className="text-xs text-slate-400">Syncing…</span>;
+    return <span className="text-xs text-slate-400">{t("header.syncing")}</span>;
   }
 
   if (user) {
@@ -40,7 +42,7 @@ function AccountControl() {
           onClick={() => void signOut()}
           className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
         >
-          Sign out
+          {t("header.signOut")}
         </button>
       </div>
     );
@@ -53,7 +55,7 @@ function AccountControl() {
         onClick={() => setPanelOpen(true)}
         className="rounded-lg px-2 py-1 text-xs font-medium text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-900/30"
       >
-        Sign in to sync
+        {t("header.signInToSync")}
       </button>
       {panelOpen && <AuthPanel onClose={() => setPanelOpen(false)} />}
     </>
@@ -63,11 +65,12 @@ function AccountControl() {
 export function AppShell({ children }: { children: ReactNode }) {
   const { gamification } = useGamification();
   const { isPasswordRecovery } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-20 sm:pb-0">
       <a href="#main-content" className="sr-only-focusable fixed left-2 top-2 z-50 rounded bg-white px-3 py-2 shadow">
-        Skip to content
+        {t("nav.skipToContent")}
       </a>
 
       {isPasswordRecovery && <ResetPasswordPanel />}
@@ -77,15 +80,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="text-lg font-bold text-brand-700 dark:text-brand-300">Verbly</span>
           {gamification && (
             <div className="flex items-center gap-3 text-sm">
-              <span title="Level" aria-label={`Level ${gamification.level}`}>
+              <span aria-label={t("header.levelAria", { level: gamification.level })}>
                 🎯 {gamification.level}
               </span>
-              <span title="Streak" aria-label={`${gamification.currentStreakDays} day streak`}>
+              <span aria-label={t("header.streakAria", { count: gamification.currentStreakDays })}>
                 🔥 {gamification.currentStreakDays}
               </span>
-              <span title="XP" aria-label={`${gamification.xp} experience points`}>
-                ⭐ {gamification.xp}
-              </span>
+              <span aria-label={t("header.xpAria", { xp: gamification.xp })}>⭐ {gamification.xp}</span>
             </div>
           )}
           <AccountControl />
@@ -93,7 +94,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {NAV_ITEMS.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => navLinkClass(isActive)}>
                 <span aria-hidden="true">{item.icon}</span>
-                {item.label}
+                {t(item.labelKey)}
               </NavLink>
             ))}
           </nav>
@@ -111,7 +112,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => navLinkClass(isActive)}>
             <span aria-hidden="true">{item.icon}</span>
-            {item.label}
+            {t(item.labelKey)}
           </NavLink>
         ))}
       </nav>

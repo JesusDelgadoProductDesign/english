@@ -48,7 +48,8 @@ create table public.user_settings (
   feedback_mode text not null default 'progressive-hints',
   enabled_hints text[] not null default '{first-letter,letter-count,missing-vowels,missing-consonants,reveal-on-attempt}',
   audio_enabled boolean not null default true,
-  daily_goal integer not null default 20
+  daily_goal integer not null default 20,
+  language text not null default 'en' check (language in ('en', 'es'))
 );
 
 alter table public.user_settings enable row level security;

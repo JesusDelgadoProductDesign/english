@@ -3,14 +3,13 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { HintType } from "@/domain/practice";
-import { ALL_MODES } from "@/domain/practice";
 import type { VerbField } from "@/domain/verb";
 import { acceptedAnswersFor, primaryFormFor } from "@/domain/verb";
-import { FIELD_LABELS } from "@/domain/fieldLabels";
 import { checkAnswer } from "@/services/practice/answerChecking";
-import { renderHint, HINT_LABELS } from "@/services/practice/hints";
+import { renderHint } from "@/services/practice/hints";
 import { speak, isSpeechSupported } from "@/services/tts/speechService";
 import { usePracticeSession } from "@/hooks/usePracticeSession";
+import { useTranslation } from "@/i18n/useTranslation";
 import { FeedbackPanel } from "./FeedbackPanel";
 
 type FieldState = {
@@ -27,6 +26,7 @@ function emptyFieldState(): FieldState {
 
 export function PracticeView() {
   const { item, verb, outcome, settings, isBusy, error, loadNext, answer } = usePracticeSession();
+  const { t } = useTranslation();
   const [fields, setFields] = useState<Record<string, FieldState>>({});
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -57,7 +57,7 @@ export function PracticeView() {
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
-        <Button onClick={() => window.location.reload()}>Retry</Button>
+        <Button onClick={() => window.location.reload()}>{t("common.retry")}</Button>
       </Card>
     );
   }
@@ -65,7 +65,7 @@ export function PracticeView() {
   if (!settings || !item || !verb) {
     return (
       <Card>
-        <p className="text-sm text-slate-500">Loading your next verb…</p>
+        <p className="text-sm text-slate-500">{t("practice.loadingNextVerb")}</p>
       </Card>
     );
   }
@@ -84,7 +84,13 @@ export function PracticeView() {
     );
   }
 
-  const modeLabel = ALL_MODES.find((m) => m.id === item.mode)?.label ?? item.mode;
+  const modeLabel = t(`modes.${item.mode}.label`);
+  const strategyKey =
+    settings.selectionStrategy === "adaptive"
+      ? "practice.selectionAdaptive"
+      : settings.selectionStrategy === "weighted"
+        ? "practice.selectionWeighted"
+        : "practice.selectionRandom";
 
   function revealNextHint(field: VerbField) {
     setFields((prev) => {
@@ -165,22 +171,20 @@ export function PracticeView() {
     <Card className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Badge tone="brand">{modeLabel}</Badge>
-        <span className="text-xs text-slate-400">
-          {settings.selectionStrategy === "adaptive" ? "Adaptive" : settings.selectionStrategy === "weighted" ? "Weighted" : "Random"} selection
-        </span>
+        <span className="text-xs text-slate-400">{t(strategyKey)}</span>
       </div>
 
       <div className="space-y-2">
         {item.givenFields.map((field) => (
           <div key={field} className="flex items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {FIELD_LABELS[field]}
+              {t(`fields.${field}`)}
             </span>
             <p className="text-2xl font-bold">{primaryFormFor(verb, field)}</p>
             {settings.audioEnabled && isSpeechSupported() && field !== "meaning" && (
               <button
                 type="button"
-                aria-label={`Play pronunciation for ${primaryFormFor(verb, field)}`}
+                aria-label={t("practice.playPronunciation", { value: primaryFormFor(verb, field) })}
                 onClick={() => speak(primaryFormFor(verb, field))}
                 className="rounded-full p-1 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
@@ -203,7 +207,7 @@ export function PracticeView() {
           return (
             <div key={field}>
               <label htmlFor={`field-${field}`} className="mb-1 block text-sm font-medium">
-                {FIELD_LABELS[field]}
+                {t(`fields.${field}`)}
               </label>
               <input
                 id={`field-${field}`}
@@ -226,7 +230,7 @@ export function PracticeView() {
                 }`}
               />
               {state.wrongSinceLastCheck && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">Not quite — try again.</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{t("practice.notQuiteTryAgain")}</p>
               )}
               {manualHintTypes.length > 0 && state.revealedHints.length < manualHintTypes.length && (
                 <button
@@ -234,20 +238,20 @@ export function PracticeView() {
                   onClick={() => revealNextHint(field)}
                   className="mt-2 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                  💡 Reveal cue
+                  {t("practice.revealCue")}
                 </button>
               )}
               {(state.revealedHints.length > 0 || state.revealedLetters > 0) && (
                 <div id={`hints-${field}`} className="mt-2 space-y-1 text-sm text-slate-500 dark:text-slate-400">
                   {state.revealedHints.map((hint) => (
                     <p key={hint}>
-                      <span className="font-medium">{HINT_LABELS[hint]}:</span>{" "}
+                      <span className="font-medium">{t(`hints.${hint}`)}:</span>{" "}
                       {renderHint(hint, acceptedAnswersFor(verb, field)[0] ?? "")}
                     </p>
                   ))}
                   {state.revealedLetters > 0 && (
                     <p>
-                      <span className="font-medium">{HINT_LABELS["reveal-on-attempt"]}:</span>{" "}
+                      <span className="font-medium">{t("hints.reveal-on-attempt")}:</span>{" "}
                       {renderHint("reveal-on-attempt", acceptedAnswersFor(verb, field)[0] ?? "", state.revealedLetters)}
                     </p>
                   )}
@@ -258,7 +262,7 @@ export function PracticeView() {
         })}
 
         <Button type="submit" className="w-full sm:w-auto" disabled={isBusy}>
-          {isBusy ? "Submitting…" : "Submit (Enter)"}
+          {isBusy ? t("practice.submitting") : t("practice.submitEnter")}
         </Button>
       </form>
 
@@ -269,8 +273,9 @@ export function PracticeView() {
       )}
 
       <p className="text-xs text-slate-400">
-        Tip: tap <span className="font-medium">Reveal cue</span> for a hint, or press{" "}
-        <kbd className="rounded bg-slate-100 px-1 dark:bg-slate-800">Space</kbd> in an empty field on desktop.
+        {t("practice.tipPrefix")} <span className="font-medium">{t("practice.tipRevealCue")}</span>{" "}
+        {t("practice.tipMiddle")} <kbd className="rounded bg-slate-100 px-1 dark:bg-slate-800">Space</kbd>{" "}
+        {t("practice.tipSuffix")}
       </p>
     </Card>
   );

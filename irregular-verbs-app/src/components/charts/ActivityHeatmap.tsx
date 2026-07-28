@@ -1,4 +1,5 @@
 import type { DailyActivity } from "@/services/repositories/historyTypes";
+import { useTranslation } from "@/i18n/useTranslation";
 
 const INTENSITY_CLASSES = [
   "bg-slate-100 dark:bg-slate-800",
@@ -21,25 +22,30 @@ interface ActivityHeatmapProps {
 
 /** Sequential single-hue heatmap over the last N days (GitHub-style), one measure — no legend/hue needed beyond intensity. */
 export function ActivityHeatmap({ days }: ActivityHeatmapProps) {
+  const { t } = useTranslation();
   const max = Math.max(0, ...days.map((d) => d.attempts));
 
   return (
     <div>
-      <div className="grid grid-flow-col grid-rows-[repeat(7,minmax(0,1fr))] gap-1" role="img" aria-label="Study activity over the last 30 days">
+      <div
+        className="grid grid-flow-col grid-rows-[repeat(7,minmax(0,1fr))] gap-1"
+        role="img"
+        aria-label={t("dashboard.studyActivityAriaLabel")}
+      >
         {days.map((day) => (
           <div
             key={day.date}
-            title={`${day.date}: ${day.attempts} question${day.attempts === 1 ? "" : "s"}`}
+            title={`${day.date}: ${day.attempts} ${t(day.attempts === 1 ? "dashboard.questionSingular" : "dashboard.questionPlural")}`}
             className={`h-4 w-4 rounded-sm ${INTENSITY_CLASSES[intensityIndex(day.attempts, max)]}`}
           />
         ))}
       </div>
       <div className="mt-2 flex items-center gap-1 text-xs text-slate-400">
-        <span>Less</span>
+        <span>{t("dashboard.less")}</span>
         {INTENSITY_CLASSES.map((cls) => (
           <span key={cls} className={`h-3 w-3 rounded-sm ${cls}`} />
         ))}
-        <span>More</span>
+        <span>{t("dashboard.more")}</span>
       </div>
     </div>
   );
