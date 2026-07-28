@@ -32,15 +32,30 @@ export function FeedbackPanel({ verb, outcome, audioEnabled, isBusy, onNext }: F
       </div>
 
       <ul className="flex flex-wrap gap-2">
-        {outcome.results.map((r) => (
-          <li key={r.field}>
-            <Badge tone={r.correct ? "success" : "danger"}>
-              {r.correct ? "✓" : "✗"} {FIELD_LABELS[r.field]}
-              {!r.correct && r.field !== "meaning" ? `: ${primaryFormFor(verb, r.field)}` : ""}
-              {!r.correct && r.field === "meaning" ? `: ${verb.meanings.join(" / ")}` : ""}
-            </Badge>
-          </li>
-        ))}
+        {outcome.results.map((r) => {
+          if (r.correct) {
+            return (
+              <li key={r.field}>
+                <Badge tone="success">✓ {FIELD_LABELS[r.field]}</Badge>
+              </li>
+            );
+          }
+
+          const correctAnswer = r.field === "meaning" ? verb.meanings.join(" / ") : primaryFormFor(verb, r.field);
+          return (
+            <li key={r.field}>
+              <div className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-800 dark:bg-red-900/40 dark:text-red-300">
+                <p className="font-semibold">✗ {FIELD_LABELS[r.field]}</p>
+                <p>
+                  You wrote: <s className="opacity-70">{r.userAnswer.trim() || "(left blank)"}</s>
+                </p>
+                <p>
+                  Correct: <span className="font-semibold">{correctAnswer}</span>
+                </p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       {outcome.newlyMastered.length > 0 && (
