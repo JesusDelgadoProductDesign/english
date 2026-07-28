@@ -228,6 +228,15 @@ export function PracticeView() {
               {state.wrongSinceLastCheck && (
                 <p className="mt-1 text-xs text-red-600 dark:text-red-400">Not quite — try again.</p>
               )}
+              {manualHintTypes.length > 0 && state.revealedHints.length < manualHintTypes.length && (
+                <button
+                  type="button"
+                  onClick={() => revealNextHint(field)}
+                  className="mt-2 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  💡 Reveal cue
+                </button>
+              )}
               {(state.revealedHints.length > 0 || state.revealedLetters > 0) && (
                 <div id={`hints-${field}`} className="mt-2 space-y-1 text-sm text-slate-500 dark:text-slate-400">
                   {state.revealedHints.map((hint) => (
@@ -260,8 +269,8 @@ export function PracticeView() {
       )}
 
       <p className="text-xs text-slate-400">
-        Tip: press <kbd className="rounded bg-slate-100 px-1 dark:bg-slate-800">Space</kbd> in an empty field for a
-        hint.
+        Tip: tap <span className="font-medium">Reveal cue</span> for a hint, or press{" "}
+        <kbd className="rounded bg-slate-100 px-1 dark:bg-slate-800">Space</kbd> in an empty field on desktop.
       </p>
     </Card>
   );
