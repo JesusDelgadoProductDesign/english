@@ -7,6 +7,8 @@ import { useTranslation } from "@/i18n/useTranslation";
 
 interface AuthPanelProps {
   onClose: () => void;
+  /** When provided, shows a "Maybe later" button — used for the auto-shown welcome popup, not the manual "Sign in to sync" flow. */
+  onMaybeLater?: () => void;
 }
 
 type Mode = "sign-in" | "sign-up" | "forgot-password";
@@ -17,7 +19,7 @@ const TITLE_KEYS: Record<Mode, string> = {
   "forgot-password": "auth.resetPasswordTitle",
 };
 
-export function AuthPanel({ onClose }: AuthPanelProps) {
+export function AuthPanel({ onClose, onMaybeLater }: AuthPanelProps) {
   const { signInWithPassword, signUpWithPassword, sendPasswordResetEmail } = useAuth();
   const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>("sign-in");
@@ -171,6 +173,16 @@ export function AuthPanel({ onClose }: AuthPanelProps) {
             className="w-full text-center text-sm text-brand-600 hover:underline dark:text-brand-400"
           >
             {mode === "sign-in" ? t("auth.needAccountSignUp") : t("auth.alreadyHaveAccountSignIn")}
+          </button>
+        )}
+
+        {onMaybeLater && (
+          <button
+            type="button"
+            onClick={onMaybeLater}
+            className="w-full text-center text-sm text-slate-500 hover:underline dark:text-slate-400"
+          >
+            {t("auth.maybeLater")}
           </button>
         )}
       </Card>

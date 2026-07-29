@@ -93,3 +93,28 @@ create policy "own attempts" on public.attempts
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create index attempts_user_created_idx on public.attempts (user_id, created_at desc);
+
+-- 6. Weekly leaderboard, shared across all users (signed-in or anonymous) — the
+-- one intentionally public table in this schema. Also requires enabling
+-- Anonymous Sign-ins in Authentication -> Sign In / Providers, so guests can
+-- get a lightweight identity for this without a real account.
+create table public.leaderboard_entries (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  display_name text not null check (char_length(display_name) between 1 and 24),
+  weekly_xp integer not null default 0,
+  week_start date not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.leaderboard_entries enable row level security;
+
+create policy "leaderboard is publicly readable" on public.leaderboard_entries
+  for select using (true);
+
+create policy "users insert their own leaderboard entry" on public.leaderboard_entries
+  for insert with check (auth.uid() = user_id);
+
+create policy "users update their own leaderboard entry" on public.leaderboard_entries
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create index leaderboard_week_xp_idx on public.leaderboard_entries (week_start, weekly_xp desc);

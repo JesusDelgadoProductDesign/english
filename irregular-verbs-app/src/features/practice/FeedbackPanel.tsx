@@ -9,6 +9,7 @@ import { primaryFormFor } from "@/domain/verb";
 import { allExampleSentences } from "@/services/content/exampleSentences";
 import { speak, isSpeechSupported } from "@/services/tts/speechService";
 import { useTranslation } from "@/i18n/useTranslation";
+import { LeaderboardCard } from "@/features/leaderboard/LeaderboardCard";
 
 interface FeedbackPanelProps {
   verb: Verb;
@@ -82,43 +83,47 @@ export function FeedbackPanel({ verb, outcome, audioEnabled, isBusy, onNext }: F
   const resultFor = (field: VerbField) => outcome.results.find((r) => r.field === field);
 
   return (
-    <Card className="space-y-4" role="status" aria-live="polite">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
-          {outcome.allCorrect ? t("feedback.correctTitle") : t("feedback.fullPictureTitle")}
-        </h2>
-        <Badge tone={outcome.allCorrect ? "success" : "warning"}>+{outcome.xp.xpEarned} XP</Badge>
-      </div>
+    <div className="space-y-6">
+      <Card className="space-y-4" role="status" aria-live="polite">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            {outcome.allCorrect ? t("feedback.correctTitle") : t("feedback.fullPictureTitle")}
+          </h2>
+          <Badge tone={outcome.allCorrect ? "success" : "warning"}>+{outcome.xp.xpEarned} XP</Badge>
+        </div>
 
-      {outcome.newlyMastered.length > 0 && (
-        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          {t("feedback.masteredFor", {
-            fields: outcome.newlyMastered.map((f) => t(`fields.${f}`)).join(", "),
-            verb: verb.infinitive,
-          })}
-        </p>
-      )}
+        {outcome.newlyMastered.length > 0 && (
+          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+            {t("feedback.masteredFor", {
+              fields: outcome.newlyMastered.map((f) => t(`fields.${f}`)).join(", "),
+              verb: verb.infinitive,
+            })}
+          </p>
+        )}
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        {(["infinitive", "pastSimple", "pastParticiple"] as const).map((field) => (
-          <FieldCard
-            key={field}
-            field={field}
-            value={primaryFormFor(verb, field)}
-            result={resultFor(field)}
-            onSpeak={speechAvailable ? () => speak(primaryFormFor(verb, field)) : undefined}
-            extra={<p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{sentences[field]}</p>}
-          />
-        ))}
-      </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {(["infinitive", "pastSimple", "pastParticiple"] as const).map((field) => (
+            <FieldCard
+              key={field}
+              field={field}
+              value={primaryFormFor(verb, field)}
+              result={resultFor(field)}
+              onSpeak={speechAvailable ? () => speak(primaryFormFor(verb, field)) : undefined}
+              extra={<p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{sentences[field]}</p>}
+            />
+          ))}
+        </div>
 
-      <FieldCard field="meaning" value={verb.meanings.join(" / ")} result={resultFor("meaning")} />
+        <FieldCard field="meaning" value={verb.meanings.join(" / ")} result={resultFor("meaning")} />
 
-      <p className="text-xs text-slate-400">{t("feedback.collocationsComingSoon")}</p>
+        <p className="text-xs text-slate-400">{t("feedback.collocationsComingSoon")}</p>
 
-      <Button onClick={onNext} disabled={isBusy} autoFocus>
-        {isBusy ? t("feedback.loading") : t("feedback.nextVerbEnter")}
-      </Button>
-    </Card>
+        <Button onClick={onNext} disabled={isBusy} autoFocus>
+          {isBusy ? t("feedback.loading") : t("feedback.nextVerbEnter")}
+        </Button>
+      </Card>
+
+      <LeaderboardCard />
+    </div>
   );
 }

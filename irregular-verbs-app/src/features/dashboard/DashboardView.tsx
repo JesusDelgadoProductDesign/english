@@ -10,6 +10,7 @@ import { useGamification } from "@/hooks/useGamification";
 import { levelProgress } from "@/domain/gamification";
 import { ACHIEVEMENTS } from "@/domain/achievements";
 import { useTranslation } from "@/i18n/useTranslation";
+import { LeaderboardCard } from "@/features/leaderboard/LeaderboardCard";
 
 function formatPercent(value: number): string {
   return `${Math.round(value * 100)}%`;
@@ -71,6 +72,8 @@ export function DashboardView() {
           label={`${progress.current} of ${progress.needed} XP to level ${gamification.level + 1}`}
         />
       </Card>
+
+      <LeaderboardCard />
 
       <Card>
         <h2 className="mb-3 text-lg font-semibold">{t("dashboard.progress")}</h2>

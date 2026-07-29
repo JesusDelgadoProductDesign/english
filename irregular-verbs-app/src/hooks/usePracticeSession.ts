@@ -6,6 +6,7 @@ import { getNextItem, submitAnswers, type SubmitAnswersOutput } from "@/services
 import { useSettings } from "./useSettings";
 import { GAMIFICATION_QUERY_KEY } from "./useGamification";
 import { STATS_QUERY_KEY } from "./useDashboardStats";
+import { LEADERBOARD_QUERY_KEY } from "./useLeaderboardIdentity";
 
 export interface PracticeState {
   item: PracticeItem | null;
@@ -54,6 +55,7 @@ export function usePracticeSession() {
         setState((prev) => ({ ...prev, outcome }));
         queryClient.invalidateQueries({ queryKey: GAMIFICATION_QUERY_KEY });
         queryClient.invalidateQueries({ queryKey: STATS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: LEADERBOARD_QUERY_KEY });
         return outcome;
       } catch {
         setError("Couldn't save your answer. Check your connection and try again.");

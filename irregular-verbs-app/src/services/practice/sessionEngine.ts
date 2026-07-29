@@ -10,6 +10,7 @@ import { qualityFromAttempt, reviewCard } from "@/services/srs/srsEngine";
 import { getProgressRepository, getHistoryRepository, getGamificationRepository } from "@/services/repositories/activeRepositories";
 import { computeXpForItem, applyXpAndStreak, type XpBreakdown } from "@/services/gamification/gamificationEngine";
 import { verbRepository } from "@/services/repositories/verbRepository";
+import { recordXp } from "@/services/leaderboard/leaderboardService";
 
 async function buildCardsByVerb(): Promise<CardsByVerb> {
   const cards = await getProgressRepository().getAll();
@@ -114,6 +115,13 @@ export async function submitAnswers({ item, verb, answers, hintsUsedByField, res
     totalVerbs: verbRepository.getAll().length,
   });
   await gamificationRepository.save(state);
+
+  try {
+    await recordXp(xpEarned);
+  } catch (err) {
+    // Leaderboard is a nice-to-have; never let it block grading a real answer.
+    console.error("Failed to record leaderboard XP:", err);
+  }
 
   return { results, allCorrect, xp: result, newlyMastered };
 }

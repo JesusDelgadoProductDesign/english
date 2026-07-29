@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/i18n/useTranslation";
 import { AuthPanel } from "@/features/auth/AuthPanel";
 import { ResetPasswordPanel } from "@/features/auth/ResetPasswordPanel";
+import { RetentionPrompts } from "@/features/auth/RetentionPrompts";
 
 const NAV_ITEMS = [
   { to: "/", labelKey: "nav.practice", icon: "📝", end: true },
@@ -74,6 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
 
       {isPasswordRecovery && <ResetPasswordPanel />}
+      <RetentionPrompts />
 
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-slate-50/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="flex items-center justify-between gap-2 px-4 py-3">

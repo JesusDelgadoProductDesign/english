@@ -1,10 +1,59 @@
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useSettings } from "@/hooks/useSettings";
+import { useLeaderboardIdentity } from "@/hooks/useLeaderboardIdentity";
+import { useAuth } from "@/contexts/AuthContext";
 import { ALL_MODES } from "@/domain/practice";
 import type { DifficultyLevel, FeedbackMode, HintType, PracticeMode, SelectionStrategy } from "@/domain/practice";
 import type { UiLanguage } from "@/domain/settings";
+import { MAX_DISPLAY_NAME_LENGTH } from "@/domain/leaderboard";
 import { useTranslation } from "@/i18n/useTranslation";
+
+function LeaderboardNameCard() {
+  const { t } = useTranslation();
+  const { isConfigured } = useAuth();
+  const { displayName, isLoading, setDisplayName, isSaving } = useLeaderboardIdentity();
+  const [draft, setDraft] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (displayName) setDraft(displayName);
+  }, [displayName]);
+
+  if (!isConfigured) return null;
+
+  async function handleSave() {
+    if (!draft.trim()) return;
+    await setDisplayName(draft.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <Card>
+      <h2 className="mb-1 text-lg font-semibold">{t("settingsPage.leaderboardName")}</h2>
+      <p className="mb-3 text-xs text-slate-500">{t("settingsPage.leaderboardNameDescription")}</p>
+      {isLoading ? (
+        <p className="text-sm text-slate-500">{t("settingsPage.loadingSettings")}</p>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            maxLength={MAX_DISPLAY_NAME_LENGTH}
+            className="w-full max-w-xs rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:border-slate-600 dark:bg-slate-800"
+          />
+          <Button onClick={() => void handleSave()} disabled={isSaving || !draft.trim()}>
+            {isSaving ? t("auth.pleaseWait") : t("settingsPage.saveName")}
+          </Button>
+          {saved && <span className="text-sm text-emerald-600 dark:text-emerald-400">{t("settingsPage.nameSaved")}</span>}
+        </div>
+      )}
+    </Card>
+  );
+}
 
 const STRATEGIES: SelectionStrategy[] = ["adaptive", "weighted", "random"];
 const DIFFICULTIES: DifficultyLevel[] = ["easy", "medium", "hard"];
@@ -57,6 +106,8 @@ export function SettingsView() {
 
   return (
     <div className="space-y-6">
+      <LeaderboardNameCard />
+
       <Card>
         <h2 className="mb-3 text-lg font-semibold">{t("settingsPage.language")}</h2>
         <div className="flex gap-2">

@@ -4,8 +4,10 @@ import type { User } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "@/services/supabase/client";
 import { setCurrentUserId } from "@/services/supabase/sessionStore";
 import { mergeLocalProgressIfNeeded } from "@/services/migration/mergeLocalProgress";
+import { migrateAnonymousEntry } from "@/services/leaderboard/leaderboardService";
 
 interface AuthContextValue {
+  /** Null for both "no session" and "anonymous leaderboard-only session" — this is "real sign-in" only. */
   user: User | null;
   isLoading: boolean;
   isSyncing: boolean;
@@ -23,6 +25,15 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/**
+ * Anonymous sessions (created solely to give guests a leaderboard identity,
+ * see leaderboardService) must never look like a real sign-in to the rest of
+ * the app — no cloud sync of practice data, no "Sign out" in the header.
+ */
+function realUserOnly(nextUser: User | null): User | null {
+  return nextUser && !nextUser.is_anonymous ? nextUser : null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
@@ -35,16 +46,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return;
 
     async function handleSession(nextUser: User | null) {
-      const isNewSignIn = !hadUserRef.current && Boolean(nextUser);
-      hadUserRef.current = Boolean(nextUser);
+      const realUser = realUserOnly(nextUser);
+      const isNewSignIn = !hadUserRef.current && Boolean(realUser);
+      hadUserRef.current = Boolean(realUser);
 
-      setCurrentUserId(nextUser?.id ?? null);
-      setUser(nextUser);
+      setCurrentUserId(realUser?.id ?? null);
+      setUser(realUser);
 
-      if (isNewSignIn && nextUser) {
+      if (isNewSignIn && realUser) {
         setIsSyncing(true);
         try {
-          await mergeLocalProgressIfNeeded(nextUser.id);
+          await mergeLocalProgressIfNeeded(realUser.id);
+          await migrateAnonymousEntry(realUser.id);
         } catch (err) {
           // Don't let a merge failure (e.g. tables not yet provisioned) block
           // the repository switch below — the signed-in queries will surface
@@ -61,9 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     supabase.auth.getSession().then(({ data }) => {
-      hadUserRef.current = Boolean(data.session?.user);
-      setCurrentUserId(data.session?.user?.id ?? null);
-      setUser(data.session?.user ?? null);
+      const realUser = realUserOnly(data.session?.user ?? null);
+      hadUserRef.current = Boolean(realUser);
+      setCurrentUserId(realUser?.id ?? null);
+      setUser(realUser);
       setIsLoading(false);
     });
 
@@ -125,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsSyncing(true);
       try {
         await mergeLocalProgressIfNeeded(user.id);
+        await migrateAnonymousEntry(user.id);
       } finally {
         setIsSyncing(false);
       }
