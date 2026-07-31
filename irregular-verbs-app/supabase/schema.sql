@@ -118,3 +118,22 @@ create policy "users update their own leaderboard entry" on public.leaderboard_e
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create index leaderboard_week_xp_idx on public.leaderboard_entries (week_start, weekly_xp desc);
+
+-- 7. User feedback submissions. Insert-only from the client — no select
+-- policy, so feedback is only readable via the Supabase dashboard.
+create table public.feedback_submissions (
+  id bigint generated always as identity primary key,
+  user_id uuid references auth.users(id) on delete set null,
+  category text not null check (category in ('verb-error', 'bug', 'feature-request', 'ux', 'translation', 'other')),
+  message text not null check (char_length(message) between 1 and 2000),
+  contact_email text,
+  page text,
+  language text,
+  user_agent text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.feedback_submissions enable row level security;
+
+create policy "anyone can submit feedback" on public.feedback_submissions
+  for insert with check (true);
