@@ -10,6 +10,7 @@ import { FeedbackButton } from "@/features/feedback/FeedbackButton";
 
 const NAV_ITEMS = [
   { to: "/", labelKey: "nav.practice", icon: "📝", end: true },
+  { to: "/topics", labelKey: "nav.topics", icon: "📚", end: false },
   { to: "/dashboard", labelKey: "nav.dashboard", icon: "📊", end: false },
   { to: "/settings", labelKey: "nav.settings", icon: "⚙️", end: false },
 ] as const;

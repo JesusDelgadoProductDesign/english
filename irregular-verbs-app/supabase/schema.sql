@@ -75,16 +75,19 @@ create policy "own daily activity" on public.daily_activity
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- 5. Raw attempt log — powers weakest/strongest/most-reviewed analytics and
--- average response time.
+-- average response time. verb_id is null for grammar-topic attempts, which set
+-- topic_id/pattern_id instead.
 create table public.attempts (
   id bigint generated always as identity primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
-  verb_id text not null,
+  verb_id text,
   mode text not null,
   results jsonb not null,
   hints_used integer not null default 0,
   response_time_ms integer not null default 0,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  topic_id text,
+  pattern_id text
 );
 
 alter table public.attempts enable row level security;
@@ -137,3 +140,22 @@ alter table public.feedback_submissions enable row level security;
 
 create policy "anyone can submit feedback" on public.feedback_submissions
   for insert with check (true);
+
+-- 8. Grammar-topic mastery. Simple per-(topic, pattern) accuracy aggregate — no
+-- spaced-repetition scheduling like srs_cards, since grammar item banks are
+-- much smaller than the verb list.
+create table public.grammar_pattern_stats (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  topic_id text not null,
+  pattern_id text not null,
+  total_attempts integer not null default 0,
+  total_correct integer not null default 0,
+  last_attempted_at timestamptz,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, topic_id, pattern_id)
+);
+
+alter table public.grammar_pattern_stats enable row level security;
+
+create policy "own grammar pattern stats" on public.grammar_pattern_stats
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

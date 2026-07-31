@@ -7,7 +7,7 @@ import type { UiLanguage } from "@/domain/settings";
  */
 export const translations = {
   en: {
-    nav: { practice: "Practice", dashboard: "Dashboard", settings: "Settings", skipToContent: "Skip to content" },
+    nav: { practice: "Practice", topics: "Topics", dashboard: "Dashboard", settings: "Settings", skipToContent: "Skip to content" },
     header: {
       signInToSync: "Sign in to sync",
       signOut: "Sign out",
@@ -86,6 +86,7 @@ export const translations = {
       queueSize: "Queue size",
       achievements: "Achievements",
       loadingProgress: "Loading your progress…",
+      grammarTopics: "Grammar Topics",
     },
     achievements: {
       "first-steps": { title: "First Steps", description: "Answer your first 10 questions." },
@@ -239,9 +240,104 @@ export const translations = {
       thanks: "Thanks! Your feedback helps make Verbly better. 🙌",
       close: "Close",
     },
+    topics: {
+      pageTitle: "Study topics",
+      pageDescription: "Pick a topic to focus on, or let Verbly choose for you.",
+      studyModesTitle: "Or let Verbly pick for you",
+      backToTopics: "Back to topics",
+      comingSoon: "Coming soon",
+      category: { verbForms: "Verb forms", grammar: "Grammar" },
+      selectionMode: {
+        single: "Pick a topic",
+        randomMix: "Random mix",
+        learningRoute: "Learning route",
+        weaknessBased: "Focus on weak spots",
+      },
+      irregularVerbs: {
+        title: "Irregular Verbs",
+        description: "Infinitive, past simple, past participle, and meaning.",
+      },
+      describingProblems: {
+        title: "Describing Problems",
+        description: "Talk about damage and defects with adjectives or nouns.",
+        patterns: { adjectiveVsNoun: "Adjective vs. noun phrase" },
+      },
+      pastContinuousVsSimple: {
+        title: "Past Continuous vs. Simple Past",
+        description: "An ongoing action interrupted by a completed event.",
+        patterns: { interruptedPast: "Interrupted past action" },
+      },
+      pastPerfect: {
+        title: "Past Perfect",
+        description: "An event that happened before another past event.",
+        patterns: { beforePastEvent: "Before a past event" },
+      },
+      pastAccomplishments: {
+        title: "Past Accomplishments",
+        description: "\"Managed to\" and \"was able to\" for things you achieved.",
+        patterns: {
+          oneOffSimplePast: "One-off accomplishment (simple past)",
+          upToNowPresentPerfect: "Accomplishment up to now (present perfect)",
+        },
+      },
+      tagQuestions: {
+        title: "Tag Questions for Opinions",
+        description: "Add a short question to check or share an opinion.",
+        patterns: {
+          affirmativeNegative: "Affirmative statement, negative tag",
+          negativeAffirmative: "Negative statement, affirmative tag",
+        },
+      },
+      futureWill: {
+        title: "Predicting the Future with Will",
+        description: "Simple future, future continuous, and future perfect.",
+        patterns: {
+          willSimple: "Simple future prediction",
+          futureContinuous: "Ongoing future prediction",
+          futurePerfect: "Prediction completed by a certain time",
+        },
+      },
+      pastModalsCertainty: {
+        title: "Past Modals for Certainty",
+        description: "\"Must have\", \"might have\", \"couldn't have\" and more.",
+        patterns: {
+          mustHave: "Must have (almost certain)",
+          mustNotHave: "Must not have (almost certain, negative)",
+          mayMightHave: "May/might have (possible)",
+          couldHave: "Could have (possible)",
+          couldntHave: "Couldn't have (not possible)",
+        },
+      },
+      pastModalsJudgment: {
+        title: "Past Modals for Judgment",
+        description: "Judge past actions or suggest a better alternative.",
+        patterns: {
+          judgingPastActions: "Judging past actions",
+          suggestingAlternatives: "Suggesting alternative past actions",
+        },
+      },
+      regretHypotheticals: {
+        title: "Regret and Hypotheticals",
+        description: "\"Should have\", \"would have\", and \"could have\".",
+        patterns: {
+          regretShouldHave: "Expressing regret",
+          hypotheticalWouldCouldHave: "Hypothetical outcomes",
+        },
+      },
+    },
+    grammarPractice: {
+      typeYourAnswer: "Type your answer…",
+      checkAnswer: "Check answer",
+      correct: "Correct! 🎉",
+      incorrect: "Not quite",
+      chooseCorrectAnswer: "Choose the correct option:",
+      explanation: "Explanation",
+      nextQuestion: "Next question",
+      yourAnswerWas: "The correct answer was:",
+    },
   },
   es: {
-    nav: { practice: "Practicar", dashboard: "Panel", settings: "Ajustes", skipToContent: "Saltar al contenido" },
+    nav: { practice: "Practicar", topics: "Temas", dashboard: "Panel", settings: "Ajustes", skipToContent: "Saltar al contenido" },
     header: {
       signInToSync: "Inicia sesión para sincronizar",
       signOut: "Cerrar sesión",
@@ -320,6 +416,7 @@ export const translations = {
       queueSize: "Tamaño de la cola",
       achievements: "Logros",
       loadingProgress: "Cargando tu progreso…",
+      grammarTopics: "Temas de gramática",
     },
     achievements: {
       "first-steps": { title: "Primeros Pasos", description: "Responde tus primeras 10 preguntas." },
@@ -478,6 +575,101 @@ export const translations = {
       submitError: "No se pudo enviar tu comentario — inténtalo de nuevo.",
       thanks: "¡Gracias! Tus comentarios ayudan a mejorar Verbly. 🙌",
       close: "Cerrar",
+    },
+    topics: {
+      pageTitle: "Temas de estudio",
+      pageDescription: "Elige un tema para enfocarte, o deja que Verbly elija por ti.",
+      studyModesTitle: "O deja que Verbly elija por ti",
+      backToTopics: "Volver a los temas",
+      comingSoon: "Próximamente",
+      category: { verbForms: "Formas verbales", grammar: "Gramática" },
+      selectionMode: {
+        single: "Elegir un tema",
+        randomMix: "Mezcla aleatoria",
+        learningRoute: "Ruta de aprendizaje",
+        weaknessBased: "Enfocarse en lo débil",
+      },
+      irregularVerbs: {
+        title: "Verbos Irregulares",
+        description: "Infinitivo, pasado simple, participio pasado y significado.",
+      },
+      describingProblems: {
+        title: "Describir Problemas",
+        description: "Habla sobre daños y defectos con adjetivos o sustantivos.",
+        patterns: { adjectiveVsNoun: "Adjetivo vs. frase nominal" },
+      },
+      pastContinuousVsSimple: {
+        title: "Pasado Continuo vs. Pasado Simple",
+        description: "Una acción en curso interrumpida por un evento completado.",
+        patterns: { interruptedPast: "Acción pasada interrumpida" },
+      },
+      pastPerfect: {
+        title: "Pasado Perfecto",
+        description: "Un evento que ocurrió antes de otro evento pasado.",
+        patterns: { beforePastEvent: "Antes de un evento pasado" },
+      },
+      pastAccomplishments: {
+        title: "Logros Pasados",
+        description: '"Managed to" y "was able to" para lo que lograste.',
+        patterns: {
+          oneOffSimplePast: "Logro puntual (pasado simple)",
+          upToNowPresentPerfect: "Logro hasta ahora (presente perfecto)",
+        },
+      },
+      tagQuestions: {
+        title: "Preguntas de Confirmación para Opiniones",
+        description: "Añade una pregunta corta para confirmar o compartir una opinión.",
+        patterns: {
+          affirmativeNegative: "Afirmación, coletilla negativa",
+          negativeAffirmative: "Negación, coletilla afirmativa",
+        },
+      },
+      futureWill: {
+        title: "Predecir el Futuro con Will",
+        description: "Futuro simple, futuro continuo y futuro perfecto.",
+        patterns: {
+          willSimple: "Predicción de futuro simple",
+          futureContinuous: "Predicción de futuro en curso",
+          futurePerfect: "Predicción completada para cierto momento",
+        },
+      },
+      pastModalsCertainty: {
+        title: "Modales Pasados para Certeza",
+        description: '"Must have", "might have", "couldn\'t have" y más.',
+        patterns: {
+          mustHave: "Must have (casi seguro)",
+          mustNotHave: "Must not have (casi seguro, negativo)",
+          mayMightHave: "May/might have (posible)",
+          couldHave: "Could have (posible)",
+          couldntHave: "Couldn't have (no es posible)",
+        },
+      },
+      pastModalsJudgment: {
+        title: "Modales Pasados para Juicios",
+        description: "Juzga acciones pasadas o sugiere una mejor alternativa.",
+        patterns: {
+          judgingPastActions: "Juzgar acciones pasadas",
+          suggestingAlternatives: "Sugerir acciones alternativas",
+        },
+      },
+      regretHypotheticals: {
+        title: "Arrepentimiento e Hipótesis",
+        description: '"Should have", "would have" y "could have".',
+        patterns: {
+          regretShouldHave: "Expresar arrepentimiento",
+          hypotheticalWouldCouldHave: "Resultados hipotéticos",
+        },
+      },
+    },
+    grammarPractice: {
+      typeYourAnswer: "Escribe tu respuesta…",
+      checkAnswer: "Comprobar respuesta",
+      correct: "¡Correcto! 🎉",
+      incorrect: "No es correcto",
+      chooseCorrectAnswer: "Elige la opción correcta:",
+      explanation: "Explicación",
+      nextQuestion: "Siguiente pregunta",
+      yourAnswerWas: "La respuesta correcta era:",
     },
   },
 } as const satisfies Record<UiLanguage, unknown>;

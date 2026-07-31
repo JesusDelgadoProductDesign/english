@@ -3,11 +3,19 @@ import { localProgressRepository } from "./progressRepository";
 import { localGamificationRepository } from "./gamificationRepository";
 import { localSettingsRepository } from "./settingsRepository";
 import { localHistoryRepository } from "./historyRepository";
+import { localGrammarProgressRepository } from "./grammarProgressRepository";
 import { supabaseProgressRepository } from "./supabase/supabaseProgressRepository";
 import { supabaseGamificationRepository } from "./supabase/supabaseGamificationRepository";
 import { supabaseSettingsRepository } from "./supabase/supabaseSettingsRepository";
 import { supabaseHistoryRepository } from "./supabase/supabaseHistoryRepository";
-import type { IGamificationRepository, IHistoryRepository, IProgressRepository, ISettingsRepository } from "./interfaces";
+import { supabaseGrammarProgressRepository } from "./supabase/supabaseGrammarProgressRepository";
+import type {
+  IGamificationRepository,
+  IGrammarProgressRepository,
+  IHistoryRepository,
+  IProgressRepository,
+  ISettingsRepository,
+} from "./interfaces";
 
 /**
  * Resolves which concrete repository implementation is active right now:
@@ -29,4 +37,8 @@ export function getSettingsRepository(): ISettingsRepository {
 
 export function getHistoryRepository(): IHistoryRepository {
   return getCurrentUserId() ? supabaseHistoryRepository : localHistoryRepository;
+}
+
+export function getGrammarProgressRepository(): IGrammarProgressRepository {
+  return getCurrentUserId() ? supabaseGrammarProgressRepository : localGrammarProgressRepository;
 }

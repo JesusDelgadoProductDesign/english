@@ -4,6 +4,8 @@ import type { GamificationState } from "@/domain/gamification";
 import type { UserSettings } from "@/domain/settings";
 import type { AttemptRecord } from "@/domain/practice";
 import type { DailyActivity } from "./historyTypes";
+import type { TopicId } from "@/domain/grammarTopic";
+import type { GrammarPatternStats } from "@/domain/grammarProgress";
 
 /**
  * One interface per storage concern, implemented once for the guest/local path
@@ -35,5 +37,12 @@ export interface IHistoryRepository {
   getAttempts(): Promise<AttemptRecord[]>;
   addAttempt(attempt: AttemptRecord, xpEarned: number): Promise<void>;
   getDailyActivity(): Promise<Record<string, DailyActivity>>;
+  reset(): Promise<void>;
+}
+
+/** Simple per-(topic, pattern) accuracy tracking for grammar topics — no SRS scheduling, see grammarProgress.ts. */
+export interface IGrammarProgressRepository {
+  getAll(): Promise<GrammarPatternStats[]>;
+  recordAttempt(topicId: TopicId, patternId: string, correct: boolean, at: Date): Promise<void>;
   reset(): Promise<void>;
 }

@@ -11,6 +11,8 @@ import { levelProgress } from "@/domain/gamification";
 import { ACHIEVEMENTS } from "@/domain/achievements";
 import { useTranslation } from "@/i18n/useTranslation";
 import { LeaderboardCard } from "@/features/leaderboard/LeaderboardCard";
+import { useGrammarDashboardStats } from "@/hooks/useGrammarDashboardStats";
+import { TopicMasteryCard } from "@/features/grammar/TopicMasteryCard";
 
 function formatPercent(value: number): string {
   return `${Math.round(value * 100)}%`;
@@ -27,6 +29,7 @@ export function DashboardView() {
   const { t } = useTranslation();
   const { stats, isLoading, error: statsError } = useDashboardStats();
   const { gamification, error: gamificationError } = useGamification();
+  const { topics: grammarTopics } = useGrammarDashboardStats();
   const error = statsError ?? gamificationError;
 
   if (error && (!stats || !gamification)) {
@@ -74,6 +77,17 @@ export function DashboardView() {
       </Card>
 
       <LeaderboardCard />
+
+      {grammarTopics.length > 0 && (
+        <Card>
+          <h2 className="mb-3 text-lg font-semibold">{t("dashboard.grammarTopics")}</h2>
+          <div className="space-y-2">
+            {grammarTopics.map((summary) => (
+              <TopicMasteryCard key={summary.topicId} summary={summary} />
+            ))}
+          </div>
+        </Card>
+      )}
 
       <Card>
         <h2 className="mb-3 text-lg font-semibold">{t("dashboard.progress")}</h2>
