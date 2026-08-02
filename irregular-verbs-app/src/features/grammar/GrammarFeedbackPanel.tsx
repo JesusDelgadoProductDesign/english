@@ -1,13 +1,23 @@
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import type { SubmitGrammarAnswerOutput } from "@/services/practice/grammarSessionEngine";
+import type { FilledSentence, SubmitGrammarAnswerOutput } from "@/services/practice/grammarSessionEngine";
 import { useTranslation } from "@/i18n/useTranslation";
 
 interface GrammarFeedbackPanelProps {
   outcome: SubmitGrammarAnswerOutput;
   isBusy: boolean;
   onNext: () => void;
+}
+
+function Sentence({ sentence }: { sentence: FilledSentence }) {
+  return (
+    <>
+      {sentence.before}
+      <strong>{sentence.answer}</strong>
+      {sentence.after}
+    </>
+  );
 }
 
 export function GrammarFeedbackPanel({ outcome, isBusy, onNext }: GrammarFeedbackPanelProps) {
@@ -20,11 +30,17 @@ export function GrammarFeedbackPanel({ outcome, isBusy, onNext }: GrammarFeedbac
         <Badge tone={outcome.correct ? "success" : "warning"}>+{outcome.xp.xpEarned} XP</Badge>
       </div>
 
-      {!outcome.correct && (
-        <p className="text-sm text-red-700 dark:text-red-300">
-          {t("grammarPractice.yourAnswerWas")} <strong>{outcome.correctAnswerText}</strong>
+      <div className="space-y-1 text-sm">
+        <p className="text-slate-600 dark:text-slate-400">
+          <span className="font-semibold">{t("grammarPractice.correctAnswerLabel")}</span>{" "}
+          <Sentence sentence={outcome.correctSentence} />
         </p>
-      )}
+        {!outcome.correct && outcome.userSentence && (
+          <p className="text-red-700 dark:text-red-300">
+            <span className="font-semibold">{t("feedback.youWrote")}</span> <Sentence sentence={outcome.userSentence} />
+          </p>
+        )}
+      </div>
 
       <p className="text-sm text-slate-600 dark:text-slate-400">
         <span className="font-semibold">{t("grammarPractice.explanation")}:</span> {outcome.explanation}
