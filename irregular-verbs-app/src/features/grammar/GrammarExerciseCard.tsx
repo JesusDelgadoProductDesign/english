@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { GrammarExerciseItem } from "@/domain/grammarExercise";
 import type { GrammarAnswer } from "@/services/practice/grammarSessionEngine";
@@ -34,19 +35,19 @@ export function GrammarExerciseCard({ item, isBusy, onSubmit }: GrammarExerciseC
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (item.kind === "typed") {
-      if (!text.trim()) return;
-      onSubmit({ kind: "typed", text });
-    } else {
+    if (item.kind === "multiple-choice") {
       if (!selectedChoiceId) return;
       onSubmit({ kind: "multiple-choice", choiceId: selectedChoiceId });
+    } else {
+      if (!text.trim()) return;
+      onSubmit({ kind: item.kind, text });
     }
   }
 
   return (
     <Card>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {item.kind === "typed" ? (
+        {item.kind === "typed" && (
           <>
             {item.promptContext && <p className="text-sm text-slate-500">{item.promptContext}</p>}
             <p className="text-lg font-medium">{item.blankTemplate}</p>
@@ -59,7 +60,9 @@ export function GrammarExerciseCard({ item, isBusy, onSubmit }: GrammarExerciseC
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:border-slate-600 dark:bg-slate-800"
             />
           </>
-        ) : (
+        )}
+
+        {item.kind === "multiple-choice" && (
           <>
             <p className="text-lg font-medium">{item.prompt}</p>
             <p className="text-xs text-slate-500">{t("grammarPractice.chooseCorrectAnswer")}</p>
@@ -83,6 +86,27 @@ export function GrammarExerciseCard({ item, isBusy, onSubmit }: GrammarExerciseC
                 </label>
               ))}
             </div>
+          </>
+        )}
+
+        {item.kind === "transformation" && (
+          <>
+            <div>
+              <Badge tone="neutral">{t(`grammarPractice.problemFormLabel.${item.sourceForm}`)}</Badge>
+              <p className="mt-1 text-lg font-medium">{item.sourceSentence}</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">{t(`grammarPractice.rewriteAsLabel.${item.targetForm}`)}</p>
+              <p className="mt-1 text-lg font-medium">{item.targetTemplate}</p>
+            </div>
+            <input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={t("grammarPractice.typeYourAnswer")}
+              autoFocus
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:border-slate-600 dark:bg-slate-800"
+            />
           </>
         )}
 

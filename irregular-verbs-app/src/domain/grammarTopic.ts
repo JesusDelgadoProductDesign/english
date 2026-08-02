@@ -10,8 +10,8 @@ export type TopicId =
   | "tag-questions"
   | "past-accomplishments";
 
-/** "srs-fields" is the existing irregular-verbs mode; new grammar topics use typed or multiple-choice. */
-export type ExerciseKind = "srs-fields" | "typed" | "multiple-choice";
+/** "srs-fields" is the existing irregular-verbs mode; new grammar topics use typed, multiple-choice, or transformation. */
+export type ExerciseKind = "srs-fields" | "typed" | "multiple-choice" | "transformation";
 
 export type TopicCategory = "verb-forms" | "grammar";
 

@@ -260,7 +260,10 @@ export const translations = {
       describingProblems: {
         title: "Describing Problems",
         description: "Talk about damage and defects with adjectives or nouns.",
-        patterns: { adjectiveVsNoun: "Adjective vs. noun phrase" },
+        patterns: {
+          adjectiveToNoun: "Adjective → noun phrase",
+          nounToAdjective: "Noun phrase → adjective",
+        },
       },
       pastContinuousVsSimple: {
         title: "Past Continuous vs. Simple Past",
@@ -334,6 +337,8 @@ export const translations = {
       explanation: "Explanation",
       nextQuestion: "Next question",
       yourAnswerWas: "The correct answer was:",
+      problemFormLabel: { adjective: "Adjective form", noun: "Noun phrase" },
+      rewriteAsLabel: { adjective: "Now say it using an adjective:", noun: "Now say it using a noun phrase:" },
     },
   },
   es: {
@@ -596,7 +601,10 @@ export const translations = {
       describingProblems: {
         title: "Describir Problemas",
         description: "Habla sobre daños y defectos con adjetivos o sustantivos.",
-        patterns: { adjectiveVsNoun: "Adjetivo vs. frase nominal" },
+        patterns: {
+          adjectiveToNoun: "Adjetivo → frase nominal",
+          nounToAdjective: "Frase nominal → adjetivo",
+        },
       },
       pastContinuousVsSimple: {
         title: "Pasado Continuo vs. Pasado Simple",
@@ -670,6 +678,8 @@ export const translations = {
       explanation: "Explicación",
       nextQuestion: "Siguiente pregunta",
       yourAnswerWas: "La respuesta correcta era:",
+      problemFormLabel: { adjective: "Forma adjetiva", noun: "Frase nominal" },
+      rewriteAsLabel: { adjective: "Ahora dilo con un adjetivo:", noun: "Ahora dilo con una frase nominal:" },
     },
   },
 } as const satisfies Record<UiLanguage, unknown>;

@@ -29,7 +29,10 @@ export async function getNextGrammarItem({ topicId, patternFilter }: NextGrammar
   return { item };
 }
 
-export type GrammarAnswer = { kind: "typed"; text: string } | { kind: "multiple-choice"; choiceId: string };
+export type GrammarAnswer =
+  | { kind: "typed"; text: string }
+  | { kind: "multiple-choice"; choiceId: string }
+  | { kind: "transformation"; text: string };
 
 export interface SubmitGrammarAnswerInput {
   item: GrammarExerciseItem;
@@ -45,8 +48,8 @@ export interface SubmitGrammarAnswerOutput {
 }
 
 function gradeAnswer(item: GrammarExerciseItem, answer: GrammarAnswer): { correct: boolean; correctAnswerText: string } {
-  if (item.kind === "typed") {
-    const userText = answer.kind === "typed" ? answer.text : "";
+  if (item.kind === "typed" || item.kind === "transformation") {
+    const userText = answer.kind === "typed" || answer.kind === "transformation" ? answer.text : "";
     const { correct } = checkAnswer(userText, item.answers);
     return { correct, correctAnswerText: item.answers[0] };
   }

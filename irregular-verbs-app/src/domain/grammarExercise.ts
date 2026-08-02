@@ -24,4 +24,17 @@ export interface MultipleChoiceExerciseItem extends BaseExerciseItem {
   correctChoiceId: string;
 }
 
-export type GrammarExerciseItem = TypedExerciseItem | MultipleChoiceExerciseItem;
+export type ProblemForm = "adjective" | "noun";
+
+/** Given a sentence in one form (e.g. adjective), produce its equivalent in another (e.g. noun phrase). */
+export interface TransformationExerciseItem extends BaseExerciseItem {
+  kind: "transformation";
+  sourceSentence: string;
+  sourceForm: ProblemForm;
+  targetForm: ProblemForm;
+  /** The equivalent sentence with a blank marker for the transformed part. */
+  targetTemplate: string;
+  answers: string[];
+}
+
+export type GrammarExerciseItem = TypedExerciseItem | MultipleChoiceExerciseItem | TransformationExerciseItem;

@@ -19,10 +19,13 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
   {
     id: "describing-problems",
     category: "grammar",
-    exerciseKind: "multiple-choice",
+    exerciseKind: "transformation",
     difficultyRank: 2,
-    patterns: [{ id: "adjective-vs-noun", titleKey: "topics.describingProblems.patterns.adjectiveVsNoun" }],
-    status: "planned",
+    patterns: [
+      { id: "adjective-to-noun", titleKey: "topics.describingProblems.patterns.adjectiveToNoun" },
+      { id: "noun-to-adjective", titleKey: "topics.describingProblems.patterns.nounToAdjective" },
+    ],
+    status: "live",
   },
   {
     id: "past-continuous-vs-simple",
@@ -38,7 +41,7 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
     exerciseKind: "typed",
     difficultyRank: 4,
     patterns: [{ id: "before-past-event", titleKey: "topics.pastPerfect.patterns.beforePastEvent" }],
-    status: "planned",
+    status: "live",
   },
   {
     id: "past-accomplishments",
@@ -49,7 +52,7 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
       { id: "one-off-simple-past", titleKey: "topics.pastAccomplishments.patterns.oneOffSimplePast" },
       { id: "up-to-now-present-perfect", titleKey: "topics.pastAccomplishments.patterns.upToNowPresentPerfect" },
     ],
-    status: "planned",
+    status: "live",
   },
   {
     id: "tag-questions",
@@ -72,7 +75,7 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
       { id: "future-continuous", titleKey: "topics.futureWill.patterns.futureContinuous" },
       { id: "future-perfect", titleKey: "topics.futureWill.patterns.futurePerfect" },
     ],
-    status: "planned",
+    status: "live",
   },
   {
     id: "past-modals-certainty",
@@ -86,7 +89,7 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
       { id: "could-have", titleKey: "topics.pastModalsCertainty.patterns.couldHave" },
       { id: "couldnt-have", titleKey: "topics.pastModalsCertainty.patterns.couldntHave" },
     ],
-    status: "planned",
+    status: "live",
   },
   {
     id: "past-modals-judgment",
@@ -97,7 +100,7 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
       { id: "judging-past-actions", titleKey: "topics.pastModalsJudgment.patterns.judgingPastActions" },
       { id: "suggesting-alternatives", titleKey: "topics.pastModalsJudgment.patterns.suggestingAlternatives" },
     ],
-    status: "planned",
+    status: "live",
   },
   {
     id: "regret-hypotheticals",
@@ -108,7 +111,7 @@ export const TOPIC_REGISTRY: TopicDefinition[] = [
       { id: "regret-should-have", titleKey: "topics.regretHypotheticals.patterns.regretShouldHave" },
       { id: "hypothetical-would-could-have", titleKey: "topics.regretHypotheticals.patterns.hypotheticalWouldCouldHave" },
     ],
-    status: "planned",
+    status: "live",
   },
 ];
 
